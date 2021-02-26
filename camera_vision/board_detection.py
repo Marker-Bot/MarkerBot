@@ -1,124 +1,168 @@
+# -*- coding: utf-8 -*-
+
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
-import math
-from scipy import ndimage as ndi
-from scipy.ndimage.measurements import label
-from skimage import img_as_bool
-from skimage.io import imread
-from skimage.color import rgb2gray
-from skimage.morphology import skeletonize, binary_closing
-from skimage.morphology import skeletonize
-import numpy as np
+from sys import argv
 
 
-def largest_component(indices):
-    # this function takes a list of indices denoting
-    # the white regions of the image and returns the largest
-    # white object of connected indices
-
-    return_arr = np.zeros((512, 512), dtype=np.uint8)
-    for index in indices:
-        return_arr[index[0]][index[1]] = 255
-
-    return return_arr
+def add(pt1, pt2):
+    return pt1[0] + pt2[0], pt1[1] + pt2[1]
 
 
-image = cv2.imread('/Users/valeriy/Documents/sMedX/MarkerBot/camera_vision/test_image.png', 0)
-image_gaussian = ndi.gaussian_filter(image, 4)
-image_gaussian_inv = cv2.bitwise_not(image_gaussian)
-kernel = np.ones((3, 3), np.uint8)
-
-# double thresholding extracting the sides of the rectangle
-ret1, img1 = cv2.threshold(image_gaussian_inv, 120, 255, cv2.THRESH_BINARY)
-ret2, img2 = cv2.threshold(image_gaussian_inv, 150, 255, cv2.THRESH_BINARY)
-
-double_threshold = img1 - img2
-closing = cv2.morphologyEx(double_threshold, cv2.MORPH_CLOSE, kernel)
-
-labeled, ncomponents = label(closing, kernel)
-indices = np.indices(closing.shape).T[:, :, [1, 0]]
-twos = indices[labeled == 2]
-area = [np.sum(labeled == val) for val in range(ncomponents + 1)]
-
-rectangle = largest_component(twos)
-
-cv2.imshow('rectangle', rectangle)
-cv2.waitKey(0)
+def to_int(pt):
+    return tuple([int(x) for x in pt])
 
 
+def pick_color(event, x, y):
+    if event == 0:
+        global img
+        print(cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[y][x])
+        color = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[y][x]
+        color_mat = np.full((200, 200, 3), color)
+        cv2.imshow("color", cv2.cvtColor(color_mat, cv2.COLOR_HSV2BGR))
 
 
-# Step #1 - Skeletonize
-im = img_as_bool(rgb2gray(imread('test_image.JPG')))
-out = binary_closing(skeletonize(im))
-
-# Convert to uint8
-out = 255 * (out.astype(np.uint8))
-f, (ax0, ax1) = plt.subplots(1, 2)
-ax0.imshow(im, cmap='gray', interpolation='nearest')
-ax1.imshow(out, cmap='gray', interpolation='nearest')
-plt.show()
-
-img = cv2.imread(R'/Users/valeriy/Documents/sMedX/MarkerBot/camera_vision/test_image.png')
-print(img.shape)
-img_moments = cv2.moments(
-    img[:, :, 0])  # use only one channel here (cv2.moments operates only on single channels images)
-print(img_moments)
-# print(dir(img_moments))
-
-# calculate centroid (center of mass of image)
-x = img_moments['m10'] / img_moments['m00']
-y = img_moments['m01'] / img_moments['m00']
-
-# calculate orientation of image intensity (it corresponds to the image intensity axis)
-u00 = img_moments['m00']
-u20 = img_moments['m20'] - x * img_moments['m10']
-u02 = img_moments['m02'] - y * img_moments['m01']
-u11 = img_moments['m11'] - x * img_moments['m01']
-
-u20_prim = u20 / u00
-u02_prim = u02 / u00
-u11_prim = u11 / u00
-
-angle = 0.5 * math.atan(2 * u11_prim / (u20_prim - u02_prim))
-print('The image should be rotated by: ', math.degrees(angle) / 2.0, ' degrees')
-
-cols, rows = img.shape[:2]
-# rotate the image by half of this angle
-rotation_matrix = cv2.getRotationMatrix2D((cols / 2, rows / 2), math.degrees(angle / 2.0), 1)
-img_rotated = cv2.warpAffine(img, rotation_matrix, (cols, rows))
-# print(img_rotated.shape, img_rotated.dtype)
-
-cv2.imwrite(R'/Users/valeriy/Documents/sMedX/MarkerBot/camera_vision/img1_rotated.png', img_rotated)
-
-img_rotated_clone = np.copy(img_rotated)
-img_rotated_clone2 = np.copy(img_rotated)
-
-# first method - just calculate bounding rect
-bounding_rect = cv2.boundingRect(img_rotated[:, :, 0])
-cv2.rectangle(img_rotated_clone, (bounding_rect[0], bounding_rect[1]),
-              (bounding_rect[0] + bounding_rect[2], bounding_rect[1] + bounding_rect[3]), (255, 0, 0), 2)
+def nothing(x):
+    pass
 
 
-# second method - find columns and rows with biggest sums
-def nlargest_cols(a, n):
-    col_sums = [(np.sum(col), idx) for idx, col in enumerate(a.T)]
-    return sorted(col_sums, key=lambda a: a[0])[-n:]
+def load_scalars(filename):
+    if filename is None:
+        return (0, 0, 0), (0, 0, 0)
+    with open(filename, 'r') as f:
+        scalars = []
+        for line in f:
+            scalars.append(tuple([int(s) for s in line.split()]))
+        return tuple(scalars)
 
 
-def nlargest_rows(a, n):
-    col_sums = [(np.sum(col), idx) for idx, col in enumerate(a[:, ])]
-    return sorted(col_sums, key=lambda a: a[0])[-n:]
+def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
+               threshold=1):
+    """
+    Находит в изображении img объект на основе его цвета.
+
+    Цвет задается границами lowerBound и upperBound.
+
+    lowerBound2 и upperBound2 используются в случае, если искомый цвет - красный, т.к. он "обворачивается" вокруг HSV кольца.
+
+    drawPos - рисует круг, где находится объект и показывает результируеще изображение.
+
+    threshold - число пикселей искомого цвета, при котором считается, что объект есть в изображении.
+
+    Если искомых пикселей меньше чем threshold, то возвращается (-1, -1).
+
+    Иначе - кортеж из координат объекта.
+    """
+
+    # Перевод изображения в HSV
+    img_HSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    # Создание бинарного изображения - маски, где пиксель имеет значение 1,
+    # если на его месте в оригинальном изображении пискель цвета между upperBound и lowerBound
+    mask = cv2.inRange(img_HSV, lower_bound, upper_bound)
+
+    # Создание моментов
+    moments = cv2.moments(mask)
+
+    # Нахождение координат объекта
+    if moments['m00'] < threshold:
+        return -1, -1, np.zeros_like(mask)
+    cx = int(moments['m10'] / moments['m00'])
+    cy = int(moments['m01'] / moments['m00'])
+
+    if show_mask:
+        cv2.imshow("mask", mask)
+        cv2.waitKey(1)
+
+    if draw_pos:
+        cv2.circle(img, (cx, cy), 10, (0, 0, 255), 3)
+        cv2.imshow("img", img)
+        cv2.waitKey(1)
+
+    return cx, cy, mask
 
 
-top15_cols_indices = nlargest_cols(img_rotated[:, :, 0], 15)
-top15_rows_indices = nlargest_rows(img_rotated[:, :, 0], 15)
+# a wrapper on cv2.connectedComponents
+def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf):
+    # mask = cv2.GaussianBlur(mask, (7, 7), 0, 0)
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity)
 
-for a in top15_cols_indices:
-    cv2.line(img_rotated_clone, (a[1], 0), (a[1], rows), (0, 255, 0), 1)
+    rects = []
+    areas = []
+    good_centroids = []
 
-for a in top15_rows_indices:
-    cv2.line(img_rotated_clone, (0, a[1]), (cols, a[1]), (0, 0, 255), 1)
+    for stat, centroid in zip(stats, centroids):
+        if stat[4] < min_area:
+            continue
+        if stat[2] == mask.shape[1] or stat[3] == mask.shape[0]:
+            continue
+        if centroid[0] < left_edge or centroid[0] > right_edge:
+            continue
+        cv2.circle(mask, to_int(centroid), 3, (255, 255, 255))
+        cv2.putText(mask, str(stat[4]), to_int(centroid), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
+        rects.append(list(stat[:4]))
+        areas.append(stat[4])
+        good_centroids.append(to_int(centroid))
 
-cv2.imwrite(R'/Users/valeriy/Documents/sMedX/MarkerBot/camera_vision/img2.png', img_rotated_clone)
+    zipped = zip(rects, areas, good_centroids)
+    zipped = sorted(zipped, key=lambda t: -t[1])
+    return list(zipped)
+
+
+if __name__ == "__main__":
+    cap = cv2.VideoCapture(1)
+    cap.set(5, 20)
+
+    if len(argv) < 2:
+        argv.append(None)
+    res = load_scalars(argv[1])
+
+    # Трэкбары для управления границамии
+    cv2.namedWindow("img")
+    cv2.createTrackbar("H1", "img", res[0][0], 180, nothing)
+    cv2.createTrackbar("S1", "img", res[0][1], 255, nothing)
+    cv2.createTrackbar("V1", "img", res[0][2], 255, nothing)
+    cv2.createTrackbar("H2", "img", res[1][0], 180, nothing)
+    cv2.createTrackbar("S2", "img", res[1][1], 255, nothing)
+    cv2.createTrackbar("V2", "img", res[1][2], 255, nothing)
+
+    cap = cv2.VideoCapture(0)
+    while True:
+        # Считывание изображения с камеры
+        a, img = cap.read()
+        # img = cv2.imread('/Users/valeriy/Documents/sMedX/MarkerBot/tmp/test_image.JPG')
+
+        # Считывание данных с трекбаров
+        lower_bound = (
+            cv2.getTrackbarPos('H1', 'img'),
+            cv2.getTrackbarPos('S1', 'img'),
+            cv2.getTrackbarPos('V1', 'img')
+        )
+
+        upper_bound = (
+            cv2.getTrackbarPos('H2', 'img'),
+            cv2.getTrackbarPos('S2', 'img'),
+            cv2.getTrackbarPos('V2', 'img')
+        )
+
+        x, y, mask = find_color(img, lower_bound, upper_bound, draw_pos=True, show_mask=True, threshold=10000)
+        comps = conn_comps(mask, min_area=10000)
+        for comp in comps:
+            rect = comp[0]
+            rect_left = (rect[0], rect[1])
+            rect_right = add(rect_left, (rect[2], rect[3]))
+            cv2.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
+
+        cv2.imshow("find_board", img)
+        key = cv2.waitKey(1)
+        # Выход из программы по нажатию esc
+        if key == 27:
+            exit()
+        # Сохранение скаляров
+        if key > 0:
+            print("where to save the scalars?")
+            print("the path must be in '  ' ")
+            save_path = str(input())
+            with open(save_path, 'w') as f:
+                f.write(' '.join(str(e) for e in lower_bound) + '\n')
+                f.write(' '.join(str(e) for e in upper_bound))
