@@ -7,6 +7,7 @@ def clear_traj():
     traj.clear()
 
 
+
 class Paint(object):
     default_brush_size = 3
     default_colour = 'black'
