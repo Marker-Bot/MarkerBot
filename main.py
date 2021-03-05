@@ -3,8 +3,6 @@ from tkinter.colorchooser import askcolor
 
 traj = []
 
-
-
 def clear_traj():
     traj.clear()
 
