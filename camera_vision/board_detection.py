@@ -36,18 +36,20 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
     # Создание бинарного изображения - маски, где пиксель имеет значение 1,
     # если на его месте в оригинальном изображении пискель цвета между upperBound и lowerBound
     mask = cv2.inRange(img_HSV, lower_bound, upper_bound)
+    kernel = np.ones((5, 5), np.uint8)
+    erosion = cv2.erode(mask, kernel, iterations=5)
 
     # Создание моментов
-    moments = cv2.moments(mask)
+    moments = cv2.moments(erosion)
 
     # Нахождение координат объекта
     if moments['m00'] < threshold:
-        return -1, -1, np.zeros_like(mask)
+        return -1, -1, np.zeros_like(erosion)
     cx = int(moments['m10'] / moments['m00'])
     cy = int(moments['m01'] / moments['m00'])
 
     if show_mask:
-        cv2.imshow("mask", mask)
+        cv2.imshow("mask", erosion)
         cv2.waitKey(1)
 
     # if draw_pos:
@@ -55,7 +57,7 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
     #     cv2.imshow("img", img)
     #     cv2.waitKey(1)
 
-    return cx, cy, mask
+    return cx, cy, erosion
 
 
 # a wrapper on cv2.connectedComponents
