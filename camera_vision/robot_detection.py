@@ -4,10 +4,10 @@ import cv2 as cv
 import numpy as np
 
 # Подобранные трешхолды
-H_MIN_UP = np.array((106, 65, 44), np.uint8)
-H_MAX_UP = np.array((118, 157, 111), np.uint8)
-H_MIN_DOWN = np.array((19, 155, 130), np.uint8)
-H_MAX_DOWN = np.array((74, 239, 206), np.uint8)
+H_MIN_UP = np.array((0, 223, 0), np.uint8)
+H_MAX_UP = np.array((255, 255, 255), np.uint8)
+H_MIN_DOWN = np.array((0, 113, 127), np.uint8)
+H_MAX_DOWN = np.array((81, 255, 255), np.uint8)
 
 
 def nothing(x):
@@ -117,9 +117,16 @@ def detect_robot_coords(img):
 
 
 if __name__ == '__main__':
-    test = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\MarkerBot\tmp\test.jpeg')
+    test = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
 
-    center, image = detect_robot_coords(test)
-    # tuning_color_filter(resized)
-    cv.imshow('robot', image)
-    cv.waitKey(0)
+    #center, image = detect_robot_coords(test)
+    img = test
+    scale_percent = 20
+    width = int(img.shape[1] * scale_percent / 100)
+    height = int(img.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    cropped = img
+    resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
+    tuning_color_filter(resized)
+    #cv.imshow('robot', image)
+    #cv.waitKey(0)
