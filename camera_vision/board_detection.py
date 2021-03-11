@@ -50,10 +50,10 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
         cv2.imshow("mask", mask)
         cv2.waitKey(1)
 
-    if draw_pos:
-        cv2.circle(img, (cx, cy), 10, (0, 0, 255), 3)
-        cv2.imshow("img", img)
-        cv2.waitKey(1)
+    # if draw_pos:
+    #     cv2.circle(img, (cx, cy), 10, (0, 0, 255), 3)
+    #     cv2.imshow("img", img)
+    #     cv2.waitKey(1)
 
     return cx, cy, mask
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # Считывание изображения с камеры
         a, img = cap.read()
 
-        sensitivity = 60
+        sensitivity = 70
         lower_bound = np.array([0, 0, 255 - sensitivity])
         upper_bound = np.array([255, sensitivity, 255])
 

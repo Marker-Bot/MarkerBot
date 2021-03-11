@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import cv2 as cv
 import numpy as np
-
 
 # Подобранные трешхолды
 H_MIN_UP = np.array((106, 65, 44), np.uint8)
@@ -93,7 +94,7 @@ def detect_robot_coords(img):
     :return: (x, y, z) координаты (x, y) ценра , поворот робота; img
     """
 
-    cropped = img[750:2330, 600:2700]  # TODO Добавить кроп доски после написания детектора доски
+    cropped = img  # TODO Добавить кроп доски после написания детектора доски
 
     # Уменьшаем картинку чтоб было видно на экране
     scale_percent = 20
@@ -119,7 +120,6 @@ if __name__ == '__main__':
     test = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\MarkerBot\tmp\test.jpeg')
 
     center, image = detect_robot_coords(test)
-    #tuning_color_filter(resized)
+    # tuning_color_filter(resized)
     cv.imshow('robot', image)
     cv.waitKey(0)
-
