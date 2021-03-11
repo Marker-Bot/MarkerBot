@@ -36,20 +36,18 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
     # Создание бинарного изображения - маски, где пиксель имеет значение 1,
     # если на его месте в оригинальном изображении пискель цвета между upperBound и lowerBound
     mask = cv2.inRange(img_HSV, lower_bound, upper_bound)
-    kernel = np.ones((5, 5), np.uint8)
-    erosion = cv2.erode(mask, kernel, iterations=5)
 
     # Создание моментов
-    moments = cv2.moments(erosion)
+    moments = cv2.moments(mask)
 
     # Нахождение координат объекта
     if moments['m00'] < threshold:
-        return -1, -1, np.zeros_like(erosion)
+        return -1, -1, np.zeros_like(mask)
     cx = int(moments['m10'] / moments['m00'])
     cy = int(moments['m01'] / moments['m00'])
 
     if show_mask:
-        cv2.imshow("mask", erosion)
+        cv2.imshow("mask", mask)
         cv2.waitKey(1)
 
     # if draw_pos:
@@ -57,7 +55,7 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
     #     cv2.imshow("img", img)
     #     cv2.waitKey(1)
 
-    return cx, cy, erosion
+    return cx, cy, mask
 
 
 # a wrapper on cv2.connectedComponents
@@ -94,7 +92,7 @@ def conn_comps(mask, connectivity=8, left_edge=0, right_edge=np.inf):
 if __name__ == "__main__":
     cap = cv2.VideoCapture(1)
     cap.set(5, 20)
-
+    c = 0
     while True:
         # Считывание изображения с камеры
         a, img = cap.read()

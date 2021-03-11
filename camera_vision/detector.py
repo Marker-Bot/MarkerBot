@@ -6,7 +6,7 @@ import numpy as np
 
 
 def detect():
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(1)
     cap.set(5, 20)
 
     while True:
@@ -62,11 +62,11 @@ def test(img):
     cv.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
     roi = img[rect_left[1]:rect_right[1], rect_left[0]:rect_right[0]]
 
-    #cv.imshow("cropped_board", roi)
+    # cv.imshow("cropped_board", roi)
 
     cv.imshow("find_board", img)
 
-    #center, r_image = rd.detect_robot_coords(roi)
+    # center, r_image = rd.detect_robot_coords(roi)
 
     scale_percent = 40
     width = int(roi.shape[1] * scale_percent / 100)
@@ -76,7 +76,7 @@ def test(img):
     resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
 
     r_image = rd.tuning_color_filter(resized)
-    #cv.imshow('robot', r_image)
+    # cv.imshow('robot', r_image)
 
     key = cv.waitKey(1)
     # Выход из программы по нажатию esc
@@ -85,5 +85,6 @@ def test(img):
 
 
 if __name__ == '__main__':
-    test_im = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
-    test(test_im)
+# test_im = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
+# test(test_im)
+    detect()
