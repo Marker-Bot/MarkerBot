@@ -2,7 +2,6 @@
 
 import cv2
 import numpy as np
-from sys import argv
 
 
 def add(pt1, pt2):
@@ -60,7 +59,7 @@ def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
 
 
 # a wrapper on cv2.connectedComponents
-def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf):
+def conn_comps(mask, connectivity=8, left_edge=0, right_edge=np.inf):
     # mask = cv2.GaussianBlur(mask, (7, 7), 0, 0)
     num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask, connectivity)
 
@@ -75,8 +74,6 @@ def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf)
         # else:
         #     continue
 
-        if stat[4] < min_area:
-            continue
         if stat[2] == mask.shape[1] or stat[3] == mask.shape[0]:
             continue
         if centroid[0] < left_edge or centroid[0] > right_edge:
@@ -93,30 +90,34 @@ def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf)
 
 
 if __name__ == "__main__":
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     cap.set(5, 20)
 
     while True:
         # Считывание изображения с камеры
         a, img = cap.read()
-        # img = cv2.imread('/Users/valeriy/Documents/sMedX/MarkerBot/tmp/test_image.JPG')
 
-        sensitivity = 15
+        sensitivity = 40
         lower_bound = np.array([0, 0, 255 - sensitivity])
         upper_bound = np.array([255, sensitivity, 255])
 
         x, y, mask = find_color(img, lower_bound, upper_bound, draw_pos=True, show_mask=True, threshold=10000)
 
-        comps = conn_comps(mask, min_area=1000)
-        for comp in comps:
-            rect = comp[0]
-            rect_left = (rect[0], rect[1])
-            print(f"Left corner coord is: {rect_left}")
-            rect_right = add(rect_left, (rect[2], rect[3]))
-            print(f"Right corner coord is: {rect_right}")
-            cv2.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
+        comp = conn_comps(mask)[0]
+        # for comp in comps:
+        rect = comp[0]
+        print(f"Rect:{rect}, Length:{comp}")
+        rect_left = (rect[0], rect[1])
+        print(f"Left corner coord is: {rect_left[0]},{rect_left[1]}")
+        rect_right = add(rect_left, (rect[2], rect[3]))
+        print(f"Right corner coord is: {rect_right[0], rect_right[1]}")
+        cv2.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
+        roi = img[rect_left[1]:rect_right[1], rect_left[0]:rect_right[0]]
+
+        cv2.imshow("cropped_board", roi)
 
         cv2.imshow("find_board", img)
+
         key = cv2.waitKey(1)
         # Выход из программы по нажатию esc
         if key == 27:
