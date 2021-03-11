@@ -13,29 +13,6 @@ def to_int(pt):
     return tuple([int(x) for x in pt])
 
 
-def pick_color(event, x, y):
-    if event == 0:
-        global img
-        print(cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[y][x])
-        color = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[y][x]
-        color_mat = np.full((200, 200, 3), color)
-        cv2.imshow("color", cv2.cvtColor(color_mat, cv2.COLOR_HSV2BGR))
-
-
-def nothing(x):
-    pass
-
-
-def load_scalars(filename):
-    if filename is None:
-        return (0, 0, 0), (0, 0, 0)
-    with open(filename, 'r') as f:
-        scalars = []
-        for line in f:
-            scalars.append(tuple([int(s) for s in line.split()]))
-        return tuple(scalars)
-
-
 def find_color(img, lower_bound, upper_bound, draw_pos=False, show_mask=False,
                threshold=1):
     """
@@ -92,6 +69,12 @@ def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf)
     good_centroids = []
 
     for stat, centroid in zip(stats, centroids):
+        # if stat[4] > MAX_AREA:
+        #     MAX_AREA = stat[4]
+        #     print(MAX_AREA)
+        # else:
+        #     continue
+
         if stat[4] < min_area:
             continue
         if stat[2] == mask.shape[1] or stat[3] == mask.shape[0]:
@@ -110,47 +93,27 @@ def conn_comps(mask, min_area=0, connectivity=8, left_edge=0, right_edge=np.inf)
 
 
 if __name__ == "__main__":
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     cap.set(5, 20)
 
-    if len(argv) < 2:
-        argv.append(None)
-    res = load_scalars(argv[1])
-
-    # Трэкбары для управления границамии
-    cv2.namedWindow("img")
-    cv2.createTrackbar("H1", "img", res[0][0], 180, nothing)
-    cv2.createTrackbar("S1", "img", res[0][1], 255, nothing)
-    cv2.createTrackbar("V1", "img", res[0][2], 255, nothing)
-    cv2.createTrackbar("H2", "img", res[1][0], 180, nothing)
-    cv2.createTrackbar("S2", "img", res[1][1], 255, nothing)
-    cv2.createTrackbar("V2", "img", res[1][2], 255, nothing)
-
-    cap = cv2.VideoCapture(0)
     while True:
         # Считывание изображения с камеры
         a, img = cap.read()
         # img = cv2.imread('/Users/valeriy/Documents/sMedX/MarkerBot/tmp/test_image.JPG')
 
-        # Считывание данных с трекбаров
-        lower_bound = (
-            cv2.getTrackbarPos('H1', 'img'),
-            cv2.getTrackbarPos('S1', 'img'),
-            cv2.getTrackbarPos('V1', 'img')
-        )
-
-        upper_bound = (
-            cv2.getTrackbarPos('H2', 'img'),
-            cv2.getTrackbarPos('S2', 'img'),
-            cv2.getTrackbarPos('V2', 'img')
-        )
+        sensitivity = 15
+        lower_bound = np.array([0, 0, 255 - sensitivity])
+        upper_bound = np.array([255, sensitivity, 255])
 
         x, y, mask = find_color(img, lower_bound, upper_bound, draw_pos=True, show_mask=True, threshold=10000)
-        comps = conn_comps(mask, min_area=10000)
+
+        comps = conn_comps(mask, min_area=1000)
         for comp in comps:
             rect = comp[0]
             rect_left = (rect[0], rect[1])
+            print(f"Left corner coord is: {rect_left}")
             rect_right = add(rect_left, (rect[2], rect[3]))
+            print(f"Right corner coord is: {rect_right}")
             cv2.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
 
         cv2.imshow("find_board", img)
@@ -158,11 +121,3 @@ if __name__ == "__main__":
         # Выход из программы по нажатию esc
         if key == 27:
             exit()
-        # Сохранение скаляров
-        if key > 0:
-            print("where to save the scalars?")
-            print("the path must be in '  ' ")
-            save_path = str(input())
-            with open(save_path, 'w') as f:
-                f.write(' '.join(str(e) for e in lower_bound) + '\n')
-                f.write(' '.join(str(e) for e in upper_bound))
