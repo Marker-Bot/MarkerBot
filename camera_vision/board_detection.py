@@ -97,7 +97,7 @@ if __name__ == "__main__":
         # Считывание изображения с камеры
         a, img = cap.read()
 
-        sensitivity = 40
+        sensitivity = 60
         lower_bound = np.array([0, 0, 255 - sensitivity])
         upper_bound = np.array([255, sensitivity, 255])
 
