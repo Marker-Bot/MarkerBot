@@ -1,11 +1,21 @@
 from tkinter import *
 from tkinter.colorchooser import askcolor
+import plotly
+import plotly.graph_objs as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+
+import numpy as np
 
 traj = []
+traj_x = []
+traj_y = []
+
 
 def clear_traj():
     traj.clear()
-
+    traj_x.clear()
+    traj_y.clear()
 
 
 class Paint(object):
@@ -31,7 +41,7 @@ class Paint(object):
         self.clear_btn.grid(row=0, column=3, sticky=W)
 
         # Команда, которая будет посылать рисунок
-        self.draw_it_button = Button(self.root, text='draw it!', command=self.use_eraser)
+        self.draw_it_button = Button(self.root, text='draw it!', command=self.sent_trajectory)
         self.draw_it_button.grid(row=0, column=4)
 
         self.setup()
@@ -51,6 +61,9 @@ class Paint(object):
         self.c.delete("all")
         clear_traj()
         self.use_brush()
+
+    def sent_trajectory(self):
+        self.c.delete("all")
 
     def use_brush(self):
         self.activate_button(self.brush_button)
@@ -74,9 +87,9 @@ class Paint(object):
         self.old_x = event.x
         self.old_y = event.y
         # Добавление координат в массив
-        coords = tuple([event.x, event.y])
-        traj.append(coords)
-        print(traj)
+        traj.append((event.x, event.y))
+        traj_x.append(event.x)
+        traj_y.append(-event.y + 600)
 
     def reset(self, event):
         self.old_x, self.old_y = None, None
@@ -84,3 +97,11 @@ class Paint(object):
 
 if __name__ == '__main__':
     Paint()
+
+print(traj_x)
+print(traj_y)
+
+layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
+fig = go.Figure(layout=layout)
+fig.add_trace(go.Scatter(x=traj_x, y=traj_y, mode='markers'))
+fig.show()
