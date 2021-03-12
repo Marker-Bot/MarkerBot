@@ -6,6 +6,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 
 import numpy as np
+import pandas as pd
 
 traj_x = []
 traj_y = []
@@ -61,7 +62,12 @@ class Paint(object):
         self.use_brush()
 
     def sent_trajectory(self):
+        layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
+        fig = go.Figure(layout=layout)
+        fig.add_trace(go.Scatter(x=traj_x, y=traj_y, mode='markers'))
+        fig.show()
         self.c.delete("all")
+        clear_traj()
 
     def use_brush(self):
         self.activate_button(self.brush_button)
@@ -97,8 +103,3 @@ if __name__ == '__main__':
 
 print(traj_x)
 print(traj_y)
-
-layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
-fig = go.Figure(layout=layout)
-fig.add_trace(go.Scatter(x=traj_x, y=traj_y, mode='markers'))
-fig.show()
