@@ -7,13 +7,11 @@ from plotly.subplots import make_subplots
 
 import numpy as np
 
-traj = []
 traj_x = []
 traj_y = []
 
 
 def clear_traj():
-    traj.clear()
     traj_x.clear()
     traj_y.clear()
 
@@ -87,7 +85,6 @@ class Paint(object):
         self.old_x = event.x
         self.old_y = event.y
         # Добавление координат в массив
-        traj.append((event.x, event.y))
         traj_x.append(event.x)
         traj_y.append(-event.y + 600)
 
