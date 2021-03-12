@@ -119,14 +119,14 @@ def detect_robot_coords(img):
 if __name__ == '__main__':
     test = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
 
-    #center, image = detect_robot_coords(test)
-    img = test
-    scale_percent = 20
-    width = int(img.shape[1] * scale_percent / 100)
-    height = int(img.shape[0] * scale_percent / 100)
-    dim = (width, height)
-    cropped = img
-    resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
-    tuning_color_filter(resized)
-    #cv.imshow('robot', image)
-    #cv.waitKey(0)
+    center, image = detect_robot_coords(test)
+    #img = test
+    #scale_percent = 20
+    #width = int(img.shape[1] * scale_percent / 100)
+    #height = int(img.shape[0] * scale_percent / 100)
+    #dim = (width, height)
+    #cropped = img
+    #resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
+    #tuning_color_filter(resized)
+    cv.imshow('robot', image)
+    cv.waitKey(0)
