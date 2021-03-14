@@ -90,7 +90,7 @@ class Paint(object):
                                capstyle=ROUND, smooth=TRUE, splinesteps=36)
         self.old_x = event.x
         self.old_y = event.y
-        # Добавление координат в массив
+        # Добавление координат в массив и преобразование в другую систему координат
         traj_x.append(event.x)
         traj_y.append(-event.y + 600)
 
