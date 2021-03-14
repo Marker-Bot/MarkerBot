@@ -1,0 +1,1 @@
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_msgs/share/roseus/ros/hrwros_msgs/manifest.l

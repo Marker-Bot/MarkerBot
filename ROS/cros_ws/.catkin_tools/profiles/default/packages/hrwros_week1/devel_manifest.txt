@@ -1,0 +1,5 @@
+hrwros_week1
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_week1/cmake.lock /home/chapa00/ros/cros_ws/devel/./cmake.lock
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_week1/lib/pkgconfig/hrwros_week1.pc /home/chapa00/ros/cros_ws/devel/lib/pkgconfig/hrwros_week1.pc
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_week1/share/hrwros_week1/cmake/hrwros_week1Config-version.cmake /home/chapa00/ros/cros_ws/devel/share/hrwros_week1/cmake/hrwros_week1Config-version.cmake
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_week1/share/hrwros_week1/cmake/hrwros_week1Config.cmake /home/chapa00/ros/cros_ws/devel/share/hrwros_week1/cmake/hrwros_week1Config.cmake

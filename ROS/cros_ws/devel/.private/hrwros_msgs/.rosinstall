@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/chapa00/ros/cros_ws/devel/.private/hrwros_msgs/setup.sh

@@ -1,0 +1,1 @@
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_week1/share/hrwros_week1/cmake/hrwros_week1Config.cmake

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="gui_publisher_node" pkg="hrwros_week1" type="GuiPublisher.py"/>
+	<node name="gui_subscriber_node" pkg="hrwros_week1" type="gui_subscriber.py" output="screen"/>
+</launch>

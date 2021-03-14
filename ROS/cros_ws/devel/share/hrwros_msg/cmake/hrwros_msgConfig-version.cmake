@@ -1,0 +1,1 @@
+/home/chapa00/ros/cros_ws/devel/.private/hrwros_msg/share/hrwros_msg/cmake/hrwros_msgConfig-version.cmake
