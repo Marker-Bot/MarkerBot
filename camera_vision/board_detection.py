@@ -1,8 +1,38 @@
 # -*- coding: utf-8 -*-
-
 import cv2 as cv
 import numpy as np
-import math
+from collections import defaultdict
+
+
+def segment_by_angle_kmeans(lines, k=2, **kwargs):
+    """Groups lines based on angle with k-means.
+
+    Uses k-means on the coordinates of the angle on the unit circle
+    to segment `k` angles inside `lines`.
+    """
+
+    # Define criteria = (type, max_iter, epsilon)
+    default_criteria_type = cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER
+    criteria = kwargs.get('criteria', (default_criteria_type, 10, 1.0))
+    flags = kwargs.get('flags', cv.KMEANS_RANDOM_CENTERS)
+    attempts = kwargs.get('attempts', 10)
+
+    # returns angles in [0, pi] in radians
+    angles = np.array([line[0][1] for line in lines])
+    # multiply the angles by two and find coordinates of that angle
+    pts = np.array([[np.cos(2*angle), np.sin(2*angle)]
+                    for angle in angles], dtype=np.float32)
+
+    # run kmeans on the coords
+    labels, centers = cv.kmeans(pts, k, None, criteria, attempts, flags)[1:]
+    labels = labels.reshape(-1)  # transpose to row vec
+
+    # segment lines based on their kmeans label
+    segmented = defaultdict(list)
+    for i, line in zip(range(len(lines)), lines):
+        segmented[labels[i]].append(line)
+    segmented = list(segmented.values())
+    return segmented
 
 
 def add(pt1, pt2):
@@ -90,75 +120,105 @@ def conn_comps(mask, connectivity=8, left_edge=0, right_edge=np.inf):
     return list(zipped)
 
 
-if __name__ == "__main__":
-    img = cv.imread(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png")
+def intersection(line1, line2):
+    """Finds the intersection of two lines given in Hesse normal form.
+
+    Returns closest integer pixel locations.
+    See https://stackoverflow.com/a/383527/5087436
+    """
+    rho1, theta1 = line1[0]
+    rho2, theta2 = line2[0]
+    A = np.array([
+        [np.cos(theta1), np.sin(theta1)],
+        [np.cos(theta2), np.sin(theta2)]
+    ])
+    b = np.array([[rho1], [rho2]])
+    x0, y0 = np.linalg.solve(A, b)
+    x0, y0 = int(np.round(x0)), int(np.round(y0))
+    return [[x0, y0]]
+
+
+def segmented_intersections(lines):
+    """Finds the intersections between groups of lines."""
+
+    intersections = []
+    for i, group in enumerate(lines[:-1]):
+        for next_group in lines[i+1:]:
+            for line1 in group:
+                for line2 in next_group:
+                    intersections.append(intersection(line1, line2))
+
+    return intersections
+
+
+def find_board(img, test=False, lenght=700, min_size=500, centroid=True):
     b_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    #ret, thresh = cv.threshold(img, 100, 255, type=cv.THRESH_BINARY + cv.THRESH_OTSU)
     thresh = cv.Canny(b_img, 0, 100, apertureSize=3)
     kernel = np.ones((3, 3), np.uint8)
-    thresh = cv.dilate(thresh, kernel)
-    lines = cv.HoughLinesP(thresh, 1, np.pi / 180, 100, minLineLength=500, maxLineGap=30)
+    thresh = cv.dilate(thresh, kernel, iterations=3)
+
+    lines = cv.HoughLinesP(thresh, 1, np.pi / 180, 100, minLineLength=lenght, maxLineGap=30)
     transform = np.zeros(img.shape, dtype=np.uint8)
+
     for line in lines:
         x1, y1, x2, y2 = line[0]
-        cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        if test:
+            cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv.line(transform, (x1, y1), (x2, y2), (255, 255, 255), 2)
 
     transform = cv.cvtColor(transform, cv.COLOR_BGR2GRAY)
-    transform = cv.dilate(transform, kernel)
-    transform = cv.GaussianBlur(transform, (5, 5), 3)
-    transform = cv.dilate(transform, kernel, iterations=5)
+    transform = cv.dilate(transform, kernel, iterations=7)
     transform = cv.bitwise_not(transform)
-    contours, hierarchy = cv.findContours(transform, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    cnt = contours[0]
-    M = cv.moments(cnt)
-    cx = int(M['m10'] / M['m00'])
-    cy = int(M['m01'] / M['m00'])
-    rect = cv.minAreaRect(cnt)
-    box = cv.boxPoints(rect)
-    box = np.int0(box)
-    cv.drawContours(img, [box], 0, (0, 0, 255), 2)
+    counters, heir = cv.findContours(transform, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
 
-    resize = cv.resize(thresh, (480, 480), interpolation=cv.INTER_AREA)
-    resize2 = cv.resize(transform, (480, 480), interpolation=cv.INTER_AREA)
-    resize1 = cv.resize(img, (480, 480), interpolation=cv.INTER_AREA)
-    cv.imshow('img_r', resize1)
-    cv.imshow('img', resize)
-    cv.imshow('trans', resize2)
-    k = cv.waitKey(0)
-    if k == ord('q'):
-        cv.destroyAllWindows()
+    squares = []
+    for cnt in counters:
+        peri = cv.arcLength(cnt, True)
+        approx = cv.approxPolyDP(cnt, 0.04 * peri, True)
 
-    # cap = cv2.VideoCapture(1)
-    # cap.set(5, 20)
-    # c = 0
-    # while True:
-    #     # Считывание изображения с камеры
-    #     a, img = cap.read()
-    #
-    #     sensitivity = 70
-    #     lower_bound = np.array([0, 0, 255 - sensitivity])
-    #     upper_bound = np.array([255, sensitivity, 255])
-    #
-    #     x, y, mask = find_color(img, lower_bound, upper_bound, draw_pos=True, show_mask=True, threshold=10000)
-    #
-    #     comp = conn_comps(mask)[0]
-    #     # for comp in comps:
-    #     rect = comp[0]
-    #     print(f"Rect:{rect}, Length:{comp}")
-    #     rect_left = (rect[0], rect[1])
-    #     print(f"Left corner coord is: {rect_left[0]},{rect_left[1]}")
-    #     rect_right = add(rect_left, (rect[2], rect[3]))
-    #     print(f"Right corner coord is: {rect_right[0], rect_right[1]}")
-    #     cv2.rectangle(img, rect_left, rect_right, color=(128, 128, 0), thickness=2)
-    #     roi = img[rect_left[1]:rect_right[1], rect_left[0]:rect_right[0]]
-    #
-    #     cv2.imshow("cropped_board", roi)
-    #
-    #     cv2.imshow("find_board", img)
-    #
-    #     key = cv2.waitKey(1)
-    #     # Выход из программы по нажатию esc
-    #     if key == 27:
-    #         exit()
+        if len(approx) == 4 and cv.contourArea(cnt) > min_size:
+            M = cv.moments(cnt)
+            cx = int(M['m10'] / M['m00'])
+            cy = int(M['m01'] / M['m00'])
+            squares.append((cnt, (cx, cy)))
+
+    nearest_square = squares[0]
+    if centroid:
+        img_center = (img.shape[0] // 2, img.shape[1] // 2)
+        for square in squares:
+            if abs(square[1][0] - img_center[1]) < abs(nearest_square[1][0] - img_center[1]) and abs(
+                    square[1][1] - img_center[0]) < abs(nearest_square[1][1] - img_center[0]):
+                nearest_square = square
+
+    peri = cv.arcLength(nearest_square[0], True)
+    approx = cv.approxPolyDP(nearest_square[0], 0.04 * peri, True)
+    if test:
+        for a in approx:
+            cv.circle(img, (a[0][0], a[0][1]), 5, (255, 0, 0), -1)
+
+    pts1 = np.float32([approx[0][0], approx[1][0], approx[2][0], approx[3][0]])
+    pts2 = np.float32([[0, 0], [0, 800], [800, 800], [800, 0]])
+
+    M = cv.getPerspectiveTransform(pts1, pts2)
+
+    perspective = cv.warpPerspective(img, M, (800, 800))
+    if test:
+        cv.imshow('perspective', perspective)
+        resize = cv.resize(thresh, (480, 480), interpolation=cv.INTER_AREA)
+        resize2 = cv.resize(transform, (480, 480), interpolation=cv.INTER_AREA)
+        resize1 = cv.resize(img, (480, 480), interpolation=cv.INTER_AREA)
+        cv.imshow('img_r', resize1)
+        cv.imshow('img', resize)
+        cv.imshow('trans', resize2)
+        k = cv.waitKey(0)
+        if k == ord('q'):
+            cv.destroyAllWindows()
+
+    return perspective
+
+
+if __name__ == "__main__":
+    img = cv.imread(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_3.png")
+    find_board(img, test=True)
+
