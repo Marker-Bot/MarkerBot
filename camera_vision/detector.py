@@ -84,6 +84,6 @@ def test(img):
 
 
 if __name__ == '__main__':
-# test_im = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
-# test(test_im)
+    test_im = cv.imread(r'/Users/valeriy/Downloads/test_spo.JPG')
+    test(test_im)
     detect()

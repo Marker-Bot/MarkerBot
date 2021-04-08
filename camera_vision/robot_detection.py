@@ -2,6 +2,9 @@
 
 import cv2 as cv
 import numpy as np
+import math
+
+from camera_vision.board_detection import find_board
 
 # Подобранные трешхолды
 H_MIN_UP = np.array((74, 32, 0), np.uint8)
@@ -95,7 +98,7 @@ def detect_robot_coords(img, resize=False):
     :return: (x, y, z) координаты (x, y) ценра , поворот робота; img
     """
 
-    cropped = img[100:800, 0:300, :]  # TODO Добавить кроп доски после написания детектора доски
+    cropped = find_board(img)  # TODO Добавить кроп доски после написания детектора доски
     if resize:
         # Уменьшаем картинку чтоб было видно на экране
         scale_percent = 20
@@ -113,13 +116,16 @@ def detect_robot_coords(img, resize=False):
     cv.circle(resized, up_label, 5, (0, 255, 0), -1)
     cv.circle(resized, down_label, 5, (255, 0, 0), -1)
     cv.arrowedLine(resized, down_label, up_label, (0, 0, 255), 3)
-    z = ''  # TODO Добавить градус поворота после написания детектора доски
+    vector = (up_label[0] - down_label[0], up_label[1] - down_label[1])
+    angle = vector[0] / (
+        math.sqrt(vector[0] ** 2 + vector[1] ** 2))
 
-    return up_label, resized
+    return up_label, resized, angle
 
 
 if __name__ == '__main__':
-    #test = cv.imread(r'C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_2.png')
+    # test = cv.imread(r'/Users/valeriy/Downloads/test_spo.JPG')
+    # detect_robot_coords(test)
 
     cap = cv.VideoCapture(0)
     # cv.namedWindow("result")
@@ -135,8 +141,9 @@ if __name__ == '__main__':
         if not ret:
             print('not')
         cv.imshow('fr', frame)
-        center, res = detect_robot_coords(frame)
+        center, res, angle = detect_robot_coords(frame)
         cv.imshow('result', res)
+        print(angle)
         # hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         # h1 = cv.getTrackbarPos('h1', 'settings')
@@ -158,15 +165,14 @@ if __name__ == '__main__':
             break
     cap.release()
 
-
-    #center, image = detect_robot_coords(test)
-    #img = test
-    #scale_percent = 20
-    #width = int(img.shape[1] * scale_percent / 100)
-    #height = int(img.shape[0] * scale_percent / 100)
-    #dim = (width, height)
-    #cropped = img
-    #resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
-    #tuning_color_filter(resized)
-    #cv.imshow('robot', image)
-    #cv.waitKey(0)
+    # center, image = detect_robot_coords(test)
+    # img = test
+    # scale_percent = 20
+    # width = int(img.shape[1] * scale_percent / 100)
+    # height = int(img.shape[0] * scale_percent / 100)
+    # dim = (width, height)
+    # cropped = img
+    # resized = cv.resize(cropped, dim, interpolation=cv.INTER_AREA)
+    # tuning_color_filter(resized)
+    # cv.imshow('robot', image)
+    # cv.waitKey(0)
