@@ -62,10 +62,55 @@ class Paint(object):
         self.use_brush()
 
     def sent_trajectory(self):
+
+        print(traj_x)
+        print(traj_y)
+
         layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
         fig = go.Figure(layout=layout)
         fig.add_trace(go.Scatter(x=traj_x, y=traj_y, mode='markers'))
         fig.show()
+
+        x_av = []
+        y_av = []
+        # Аппроксимация
+        # t = np.polyfit(traj_x, traj_y, 20)
+        # f = np.poly1d(t)
+
+        #print(x_av)
+        #print(y_av)
+
+        s = []
+        r = []
+        for i in range(3, len(traj_x)-1):
+            if (abs(traj_x[i - 2] - traj_x[i]) < 4) and (abs(traj_y[i - 2] - traj_y[i]) < 4):
+                s.append(traj_x[i - 2])
+                r.append(traj_y[i - 2])
+
+        l = []
+        for i in range(len(s)):
+            coords = tuple([s[i], r[i]])
+            l.append(coords)
+
+        q = []
+        for j in range(len(traj_x)):
+            coords1 = tuple([traj_x[j], traj_y[j]])
+            q.append(coords1)
+
+        for k in range(len(l)):
+            q.remove(l[k])
+
+        for g in range(len(q)):
+            x_av.append((q[g])[0])
+            y_av.append((q[g])[1])
+
+        layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
+        fig = go.Figure(layout=layout)
+        fig.add_trace(go.Scatter(x=x_av, y=y_av, mode='markers'))
+        fig.show()
+
+
+
         self.c.delete("all")
         clear_traj()
 
@@ -100,6 +145,3 @@ class Paint(object):
 
 if __name__ == '__main__':
     Paint()
-
-print(traj_x)
-print(traj_y)
