@@ -3,24 +3,25 @@
 
 import socket
 
-sock = socket.socket()
-sock.bind(('', 9000))
-sock.listen(1)
-conn, addr = sock.accept()
+def receiveData():
+    """
+    Функция, которая принимает данные о координатах с клиента
+    """
+    sock = socket.socket()
+    sock.bind(('', 9000))
+    sock.listen(1)
+    conn, addr = sock.accept()
 
-print('connected:', addr)
+    print('connected:', addr)
 
-while True:
-    data = conn.recv(1024)
-    data = data.decode()
-    arr = data.split("|")
-    print(arr)
-    x = float(arr[0])
-    y = float(arr[1])
-    angle = float(arr[2])
-    print(str(x) + "\n" + str(y) + "\n" + str(angle) + "\n")
-    if not data:
-        break
-    conn.send("Success".encode())
+    while True:
+        startPositionXY = conn.recv(1024).decode()
+        x = conn.recv(1024).decode()
+        y = conn.recv(1024).decode()
+        flags = conn.recv(1024).decode()
 
-conn.close()
+        if not startPositionXY:
+            break
+        conn.send("Success".encode())
+
+    conn.close()
