@@ -83,7 +83,7 @@ class Paint(object):
         s = []
         r = []
         for i in range(3, len(traj_x)-1):
-            if (abs(traj_x[i - 2] - traj_x[i]) < 4) and (abs(traj_y[i - 2] - traj_y[i]) < 4):
+            if (abs(traj_x[i - 2] - traj_x[i]) < 3) and (abs(traj_y[i - 2] - traj_y[i]) < 3):
                 s.append(traj_x[i - 2])
                 r.append(traj_y[i - 2])
 
