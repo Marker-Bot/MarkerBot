@@ -94,21 +94,29 @@ def detect_label(img, h_min, h_max):
     if d_area > 150:
         x = int(d_m10 / d_area)
         y = int(d_m01 / d_area)
+
         return (x, y)
 
     else:
         return None
 
 
-def detect_robot_coords(img, resize=False):
+def detect_robot_coords(img, previous_values, resize=False):
     """
     Детектирование координат робота по фотографии и меткам.
 
-    :param img: np.array image
-    :return: (x, y, z) координаты (x, y) ценра , поворот робота; img
+    :param img: np.array текущее изображение для детектирования
+    :param previous_values: Результат предыдущего удачного детектирования
+    :param resize: Изменение изображения в более удобный вид (для теста)
+
+    :return: (x, y) координаты (x, y) ценра , img детекции,
     """
 
-    cropped = find_board(img)
+    cropped, flag = find_board(img)
+
+    if not flag:
+        return previous_values
+
     if resize:
         # Уменьшаем картинку чтоб было видно на экране
         scale_percent = 20

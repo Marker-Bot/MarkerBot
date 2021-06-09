@@ -13,13 +13,15 @@ def nothing(x):
     pass
 
 
-def find_board(img, test=False, lenght=883, min_size=527132, centroid=True):
+def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000, centroid=True):
     """
+    Функция для поиска доски на изображении
 
     :param img: RGB изображение np.array
     :param test: bool настройка параметров
     :param lenght: int Минимальная длинна линии доски
     :param min_size: int Минимальный размер определившейся доски
+    :param max_size: int Максимальный размер определившейся доски
     :param centroid: bool Центрирована ли доска на frame
 
     :return: img, flag - img - перспективное преобразование доски ( кроп доски)
@@ -77,7 +79,7 @@ def find_board(img, test=False, lenght=883, min_size=527132, centroid=True):
         peri = cv.arcLength(cnt, True)
         approx = cv.approxPolyDP(cnt, 0.04 * peri, True)
 
-        if len(approx) == 4 and cv.contourArea(cnt) > min_size:
+        if len(approx) == 4 and min_size < cv.contourArea(cnt) < max_size:
             M = cv.moments(cnt)
             cx = int(M['m10'] / M['m00'])
             cy = int(M['m01'] / M['m00'])
@@ -128,10 +130,7 @@ if __name__ == "__main__":
     # find_board(img, test=True)
 
     test = True
-    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\1.mp4")
-    if cap.isOpened() is False:
-        print("Wrong")
-        exit()
+    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\2.mp4")
 
     if test:
         cv.namedWindow("result")
@@ -143,7 +142,7 @@ if __name__ == "__main__":
         cv.createTrackbar('th_can_up', 'settings', 0, 255, nothing)
         cv.createTrackbar('min_size', 'settings', 100000, 1000000, nothing)
 
-    while True:
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             print('not')
