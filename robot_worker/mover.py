@@ -63,7 +63,7 @@ for k in range (1):
 				distance = math.sqrt(math.pow(currX - getX[i], 2) + math.pow(currY - getY[i], 2))
 				kekX = (getX[i] - currX)*math.cos(currA) + (getY[i] - currY)*math.sin(currA)
 				kekY = (currX - getX[i])*math.sin(currA) + (getY[i] - currY)*math.cos(currA)
-				deltaA = math.atan2(kekY,kekX) + Kp*error()
+				deltaA = math.atan2(kekY, kekX) + Kp*error()
 				if distance < 15 or btn.any():
 					break
 				else:
