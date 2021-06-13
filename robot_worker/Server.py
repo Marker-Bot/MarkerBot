@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import socket
+
+
 def createSocket():
     """
     Функция, создающая socket для подключения
@@ -12,6 +14,7 @@ def createSocket():
     sock.listen(1)
     conn, addr = sock.accept()
     return conn
+
 
 def receiveData(conn):
     """
@@ -28,7 +31,8 @@ def receiveData(conn):
     flags = conn.recv(1024).decode()
     conn.send("Success".encode())
 
-    return startPositionXY,x,y,flags
+    return startPositionXY, x, y, flags
+
 
 def closeConnection(conn):
     """

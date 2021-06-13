@@ -3,6 +3,8 @@ from ev3dev.ev3 import *
 import time
 import math
 
+from Server import receiveData
+
 
 def filter(sp):
     """
@@ -55,17 +57,16 @@ def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
     """
     Основная функция, осуществляющая движения робота по заданному рисунку.
 
-    :param getX:
-    :param getY:
-    :param getM:
-    :param Rad:
-    :param Base:
-    :param mL:
-    :param mR:
-    :param mM:
-    :param fh:
-    :param btn:
-    :return:
+    :param getX: координаты X по которым движется робот
+    :param getY: координаты Y по которым движется робот
+    :param getM: флаги поднятия и опускания маркера
+    :param Rad: радиус колес
+    :param Base: расстояние между колесами
+    :param mL: левый мотор
+    :param mR: правый мотор
+    :param mM: мотор маркера
+    :param fh: файл записи логов
+    :param btn: кнопка включения робота
     """
     currX = currY = currA = 0
     prefX = prefY = prefA = 0
@@ -121,9 +122,7 @@ def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
 
 
 if __name__ == '__main__':
-    getX = [0, 200, 400, 0, 0, 400, 200, 0, 0]
-    getY = [100, 400, 100, 100, 300, 300, 0, 300, 0]
-    getM = [True, True, True, False, False, True, True, False, True]
+    start, getX, getY, getM = receiveData()
     Rad = 21.6
     Base = 185
     mL = LargeMotor('outB')
