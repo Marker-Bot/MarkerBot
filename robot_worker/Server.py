@@ -2,31 +2,38 @@
 # -*- coding: utf-8 -*-
 
 import socket
-
-def receiveData():
+def createSocket():
     """
-    Функция, которая принимает данные о координатах с клиента
-    :return: startPositionXY - arraylist начальных координат
-             x - arraylist координат по X
-             y - arraylist координат по Y
-             flags - arraylist поднятия и опускания маркера
+    Функция, создающая socket для подключения
+    :return: conn - подключение для принятия данных
     """
     sock = socket.socket()
     sock.bind(('', 9000))
     sock.listen(1)
     conn, addr = sock.accept()
+    return conn
 
-    print('connected:', addr)
+def receiveData(conn):
+    """
+    Функция, которая принимает данные о координатах с клиента
+    :param conn: подключение для принятия данных
+    :return: startPositionXY - arraylist начальных координат
+             x - arraylist координат по X
+             y - arraylist координат по Y
+             flags - arraylist поднятия и опускания маркера
+    """
+    startPositionXY = conn.recv(1024).decode()
+    x = conn.recv(1024).decode()
+    y = conn.recv(1024).decode()
+    flags = conn.recv(1024).decode()
+    conn.send("Success".encode())
 
-    while True:
-        startPositionXY = conn.recv(1024).decode()
-        x = conn.recv(1024).decode()
-        y = conn.recv(1024).decode()
-        flags = conn.recv(1024).decode()
-
-        if not startPositionXY:
-            break
-        conn.send("Success".encode())
-
-    conn.close()
     return startPositionXY,x,y,flags
+
+def closeConnection(conn):
+    """
+    Функция для закрытия соединения
+    :param conn: подключение для принятия данных
+    :return:
+    """
+    conn.close()
