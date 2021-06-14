@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="detector_node" pkg="hrwros_week1" type="detector.py"/>
+	<node name="gui_publisher_node" pkg="hrwros_week1" type="GuiPublisher.py"/>
+	<node name="coordinates_server_node" pkg="hrwros_week1" type="coordinates_server.py" output="screen"/>
+</launch>
