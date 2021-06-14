@@ -73,13 +73,6 @@ class Paint(object):
 
         x_av = []
         y_av = []
-        # Аппроксимация
-        # t = np.polyfit(traj_x, traj_y, 20)
-        # f = np.poly1d(t)
-
-        #print(x_av)
-        #print(y_av)
-
         s = []
         r = []
         for i in range(3, len(traj_x)-1):
