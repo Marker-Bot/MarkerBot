@@ -6,26 +6,24 @@ from Tkinter import *
 import numpy as np
 import pandas as pd
 
-
 # Node to publish a string topic.
 def PointsPublisher():
-    p_publisher = rospy.Publisher('points_from_gui_topic', Points_arrays, queue_size=10)
-    rospy.init_node('gui_publisher_node', anonymous=False)
-    rate = rospy.Rate(10)
+	p_publisher = rospy.Publisher('points_from_gui_topic', Points_arrays, queue_size = 10)
+	rospy.init_node('gui_publisher_node', anonymous = False)
+	rate = rospy.Rate(10)
 
-    # The array to be published on the topic.
-    points_info = Points_arrays()
-    points_info.x_coordinates = str(traj_x)
-    points_info.y_coordinates = str(traj_y)
-
-    # while not rospy.is_shutdown():
-    p_publisher.publish(points_info)
-    #	rate.sleep()
+	# The array to be published on the topic.
+	points_info = Points_arrays()
+	points_info.x_coordinates = str(traj_x)
+	points_info.y_coordinates = str(traj_y)
+	
+	#while not rospy.is_shutdown():
+        p_publisher.publish(points_info)
+        #rate.sleep()
 
 
 traj_x = []
 traj_y = []
-
 
 def clear_traj():
     del traj_x[:]
@@ -53,6 +51,7 @@ class Paint(object):
 
         self.clear_btn = Button(self.root, text="clean the board", width=20, command=self.clean_board)
         self.clear_btn.grid(row=0, column=3, sticky=W)
+
 
         self.draw_it_button = Button(self.root, text='draw it!', command=self.sent_trajectory)
         self.draw_it_button.grid(row=0, column=4)
@@ -100,7 +99,7 @@ class Paint(object):
         self.old_x = event.x
         self.old_y = event.y
         traj_x.append(event.x)
-        traj_y.append(-event.y + 600)
+        traj_y.append(-event.y+600)
 
     def reset(self, event):
         self.old_x, self.old_y = None, None
@@ -108,6 +107,3 @@ class Paint(object):
 
 if __name__ == '__main__':
     Paint()
-
-print(traj_x)
-print(traj_y)
