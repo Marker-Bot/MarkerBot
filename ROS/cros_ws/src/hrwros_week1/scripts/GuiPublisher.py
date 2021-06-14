@@ -8,14 +8,17 @@ import pandas as pd
 
 # Node to publish a string topic.
 def PointsPublisher():
+    """
+    Функция, которая объявляет ноду и связь с топиками
+    """
 	p_publisher = rospy.Publisher('points_from_gui_topic', Points_arrays, queue_size = 10)
 	rospy.init_node('gui_publisher_node', anonymous = False)
 	rate = rospy.Rate(10)
 
 	# The array to be published on the topic.
 	points_info = Points_arrays()
-	points_info.x_coordinates = str(traj_x)
-	points_info.y_coordinates = str(traj_y)
+	points_info.x_coordinates = str(x_av)
+	points_info.y_coordinates = str(y_av)
 	
 	#while not rospy.is_shutdown():
         p_publisher.publish(points_info)
@@ -24,17 +27,57 @@ def PointsPublisher():
 
 traj_x = []
 traj_y = []
+x_av = []
+y_av = []
+s = []
+r = []
 
 def clear_traj():
+    """
+    Функция, которая очищает массивы с координатами
+    """
     del traj_x[:]
     del traj_y[:]
 
+def averaging():
+    """
+    Функция, которая усредняет траекторию (убирает лишние точки чрезмерную кучность точек)
+    """
+    for i in range(3, len(traj_x) - 1):
+        if (abs(traj_x[i - 2] - traj_x[i]) < 3) and (abs(traj_y[i - 2] - traj_y[i]) < 3):
+            s.append(traj_x[i - 2])
+            r.append(traj_y[i - 2])
+
+    l = []
+    for i in range(len(s)):
+        coords = tuple([s[i], r[i]])
+        l.append(coords)
+
+    q = []
+    for j in range(len(traj_x)):
+        coords1 = tuple([traj_x[j], traj_y[j]])
+        q.append(coords1)
+
+    for k in range(len(l)):
+        q.remove(l[k])
+
+    for g in range(len(q)):
+        x_av.append((q[g])[0])
+        y_av.append((q[g])[1])
+
 
 class Paint(object):
+    """
+    Класс создания доски для рисования
+    """
     default_brush_size = 3
     default_colour = 'black'
 
     def __init__(self):
+        """
+        Функция создания параметров доски
+        :param self: экземпляр класса
+        """
         board_width = 800
         board_height = 600
         self.root = Tk()
@@ -60,6 +103,10 @@ class Paint(object):
         self.root.mainloop()
 
     def setup(self):
+        """
+        Функция создания параметров доски
+        :param self: экземпляр класса
+        """
         self.old_x = None
         self.old_y = None
         self.line_width = self.default_brush_size
@@ -70,26 +117,59 @@ class Paint(object):
         self.c.bind('<ButtonRelease-1>', self.reset)
 
     def clean_board(self):
+        """
+        Функция очистки доски
+        :param self: экземпляр класса
+        """
         self.c.delete("all")
         clear_traj()
         self.use_brush()
 
     def sent_trajectory(self):
+        """
+        Функция отправки траектории в ноду
+        :param self: экземпляр класса
+        """
+        averaging()
+
+        layout = go.Layout(yaxis=dict(range=[0, 600]), xaxis=dict(range=[0, 800]))
+        fig = go.Figure(layout=layout)
+        fig.add_trace(go.Scatter(x=x_av, y=y_av, mode='markers'))
+        fig.show()
         PointsPublisher()
+        self.c.delete("all")
+        clear_traj()
+
 
     def use_brush(self):
+        """
+        Функция переключения на кисть
+        :param self: экземпляр класса
+        """
         self.activate_button(self.brush_button)
 
     def use_eraser(self):
+        """
+        Функция переключения на стирательную резинку
+        :param self: экземпляр класса
+        """
         self.activate_button(self.eraser_button, eraser_mode=True)
 
     def activate_button(self, some_button, eraser_mode=False):
+        """
+        Функция активирования кнопок
+        :param self: экземпляр класса
+        """
         self.active_button.config(relief=RAISED)
         some_button.config(relief=SUNKEN)
         self.active_button = some_button
         self.eraser_on = eraser_mode
 
     def paint(self, event):
+        """
+        Функция построения отпечатка кисти
+        :param self: экземпляр класса
+        """
         self.line_width = self.default_brush_size
         paint_color = 'white' if self.eraser_on else self.color
         if self.old_x and self.old_y:
@@ -102,6 +182,10 @@ class Paint(object):
         traj_y.append(-event.y+600)
 
     def reset(self, event):
+        """
+        Функция обнуления предыдущих координат
+        :param self: экземпляр класса
+        """
         self.old_x, self.old_y = None, None
 
 
