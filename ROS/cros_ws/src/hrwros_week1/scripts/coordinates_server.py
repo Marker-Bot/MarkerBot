@@ -4,11 +4,11 @@ import rospy
 import socket
 from hrwros_msgs.msg import Points_arrays
 
-import Client
+import camera_vision.Client as cl
 
 # Topic callback function.
 def stringListenerCallback(data):
-    Client.sendData(data.x_coordinates, data.y_coordinates)
+    cl.sendData(data.x_coordinates, data.y_coordinates)
     rospy.loginfo('X coordinates: %s', data.x_coordinates)
     rospy.loginfo('Y coordinates: %s', data.y_coordinates)
 

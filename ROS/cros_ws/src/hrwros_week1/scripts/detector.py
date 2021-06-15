@@ -3,15 +3,26 @@
 import rospy
 from hrwros_msgs.msg import Points_arrays
 
+
+import camera_vision.board_detection as bd
+import camera_vision.robot_detection as rb
+import camera_vision.detector as dt
+
+
 # Node to publish a string topic.
 def Detector():
 	p_publisher = rospy.Publisher('points_from_detector_topic', Points_arrays, queue_size = 10)
 	rospy.init_node('detector_node', anonymous = False)
 	rate = rospy.Rate(10)
 
+
 	#Test arrays
 	traj_x = [1, 1, 1]
 	traj_y = [1, 1, 1]
+
+	dt.detect()
+
+
 	
 	# The array to be published on the topic.
 	points_info = Points_arrays()
