@@ -13,7 +13,7 @@ def nothing(x):
     pass
 
 
-def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000, centroid=True):
+def find_board(img: np.array, test=False, lenght=883, min_size=527132, max_size=1500000, centroid=True, record=False):
     """
     Функция для поиска доски на изображении
 
@@ -23,6 +23,7 @@ def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000,
     :param min_size: int Минимальный размер определившейся доски
     :param max_size: int Максимальный размер определившейся доски
     :param centroid: bool Центрирована ли доска на frame
+    :param record: запись проходных изображений
 
     :return: img, flag - img - перспективное преобразование доски ( кроп доски)
              flag - True - преобразование выполнено; False - преобразование не выполнено, img - оригинальная картинка
@@ -60,6 +61,8 @@ def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000,
     transform = np.zeros(img.shape, dtype=np.uint8)
 
     if lines is None:
+        if record:
+            return [img], False
         return img, False
 
     for line in lines:
@@ -86,6 +89,8 @@ def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000,
             squares.append((cnt, (cx, cy)))
 
     if len(squares) == 0:
+        if record:
+            return [img], False
         return img, False
 
     nearest_square = squares[0]
@@ -121,7 +126,8 @@ def find_board(img, test=False, lenght=883, min_size=527132, max_size = 1500000,
         k = cv.waitKey(1)
         if k == ord('q'):
             cv.destroyAllWindows()
-
+    if record:
+        return [img, perspective, transform, thresh], True
     return perspective, True
 
 
@@ -129,8 +135,17 @@ if __name__ == "__main__":
     # img = cv.imread(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_4.png")
     # find_board(img, test=True)
 
-    test = True
-    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\2.mp4")
+    test = False
+    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\1.mp4")
+
+    ret, frame = cap.read()
+    print(ret, (frame.shape[0:2]))
+    w, h, sz = frame.shape
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
+    video_writer_1 = cv.VideoWriter("perspective2.avi", fourcc, 24.0, (800, 800))
+    video_writer_2 = cv.VideoWriter("transform2.avi", fourcc, 24.0, (480, 480))
+    video_writer_3 = cv.VideoWriter("thresh2.avi", fourcc, 24.0, (480, 480))
+    video_writer_4 = cv.VideoWriter("img2.avi", fourcc, 24.0, (h, w))
 
     if test:
         cv.namedWindow("result")
@@ -142,13 +157,37 @@ if __name__ == "__main__":
         cv.createTrackbar('th_can_up', 'settings', 0, 255, nothing)
         cv.createTrackbar('min_size', 'settings', 100000, 1000000, nothing)
 
+    prev_images = []
+    count = 0
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             print('not')
-            continue
-        img, flag = find_board(frame, test=True)
-        cv.imshow("res_img", img)
-        if cv.waitKey(1) == ord("q"):
-            cap.release()
-            exit()
+            break
+        images, flag = find_board(frame, test=False, record=True)
+        if flag:
+            images[2] = cv.resize(images[2], (480, 480), interpolation=cv.INTER_AREA)
+            images[3] = cv.resize(images[3], (480, 480), interpolation=cv.INTER_AREA)
+            images[2] = cv.cvtColor(images[2], cv.COLOR_GRAY2BGR)
+            images[3] = cv.cvtColor(images[3], cv.COLOR_GRAY2BGR)
+            video_writer_1.write(images[1])
+            video_writer_2.write(images[2])
+            video_writer_3.write(images[3])
+            video_writer_4.write(images[0])
+            #print(images[0].shape, images[2].shape, images[3].shape)#
+            prev_images = images
+        elif len(prev_images) > 1:
+            video_writer_4.write(images[0])
+            video_writer_1.write(prev_images[1])
+            video_writer_2.write(prev_images[2])
+            video_writer_3.write(prev_images[3])
+
+    cap.release()
+    video_writer_1.release()
+    video_writer_2.release()
+    video_writer_3.release()
+    video_writer_4.release()
+        # cv.imshow("res_img", img)
+        # if cv.waitKey(1) == ord("q"):
+        #     cap.release()
+        #     exit()

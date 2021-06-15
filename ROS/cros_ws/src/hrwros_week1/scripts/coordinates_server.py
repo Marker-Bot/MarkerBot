@@ -8,12 +8,20 @@ import camera_vision.Client as cl
 
 # Topic callback function.
 def stringListenerCallback(data):
+    """
+    Log - функция
+    :param data: Координаты робота из ноды.
+    :return:
+    """
     cl.sendData(data.x_coordinates, data.y_coordinates)
     rospy.loginfo('X coordinates: %s', data.x_coordinates)
     rospy.loginfo('Y coordinates: %s', data.y_coordinates)
 
 def stringListener():
-
+    """
+    Listener нода сервера.
+    :return:
+    """
     rospy.init_node('coordinates_server_node', anonymous = False)
 
     rospy.Subscriber('points_from_gui_topic', Points_arrays, stringListenerCallback)

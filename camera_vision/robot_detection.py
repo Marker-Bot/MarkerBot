@@ -7,10 +7,10 @@ import math
 from camera_vision.board_detection import find_board
 
 # Подобранные трешхолды
-H_MIN_UP = np.array((74, 32, 0), np.uint8)
-H_MAX_UP = np.array((255, 255, 130), np.uint8)
-H_MIN_DOWN = np.array((42, 0, 0), np.uint8)
-H_MAX_DOWN = np.array((69, 255, 30), np.uint8)
+H_MIN_UP = np.array((102, 255, 70), np.uint8)
+H_MAX_UP = np.array((200, 255, 130), np.uint8)
+H_MIN_DOWN = np.array((77, 179, 0), np.uint8)
+H_MAX_DOWN = np.array((90, 255, 71), np.uint8)
 
 
 def nothing(x):
@@ -30,6 +30,10 @@ def tuning_color_filter(test_img):
     :param test_img: np.array - image
     :return:
     """
+
+    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\1.mp4")
+
+
     cv.namedWindow("result")
     cv.namedWindow("settings")
     cv.createTrackbar('h1', 'settings', 0, 255, nothing)
@@ -40,6 +44,7 @@ def tuning_color_filter(test_img):
     cv.createTrackbar('v2', 'settings', 255, 255, nothing)
 
     while True:
+        ret, test_img = cap.read()
         hsv = cv.cvtColor(test_img, cv.COLOR_BGR2HSV)
 
         h1 = cv.getTrackbarPos('h1', 'settings')
@@ -57,7 +62,7 @@ def tuning_color_filter(test_img):
 
         cv.imshow('result', thresh)
 
-        ch = cv.waitKey(1)
+        ch = cv.waitKey(25)
         if ch == ord('q'):
             break
     cv.destroyAllWindows()
@@ -76,13 +81,13 @@ def detect_label(img, h_min, h_max):
 
     # To hsv
     hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    hsv = img
+    #hsv = img
     thresh = cv.inRange(hsv, h_min, h_max)
 
     # Уберем лишнее и сгладим края опеннингом
     kernel = np.ones((5, 5), np.uint8)
     open_img = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel)
-    cv.imshow(f'labels{h_max[0]}', open_img)
+    #cv.imshow(f'labels{h_max[0]}', open_img)
 
     # Вычислим моменты
     moments = cv.moments(open_img, 1)
@@ -134,45 +139,66 @@ def detect_robot_coords(img, previous_values, resize=False):
     cv.circle(resized, up_label, 5, (0, 255, 0), -1)
     cv.circle(resized, down_label, 5, (255, 0, 0), -1)
     cv.arrowedLine(resized, down_label, up_label, (0, 0, 255), 3)
+    if up_label is None or down_label is None:
+        return previous_values
     vector = (up_label[0] - down_label[0], up_label[1] - down_label[1])
+
     angle = vector[0] / (math.sqrt(vector[0] ** 2 + vector[1] ** 2))
 
     return up_label, resized, angle
 
 
 if __name__ == '__main__':
-    # test = cv.imread(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_4.png")
-    # cropped = find_board(test)
+    #test = cv.imread(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_4.png")
+    #cropped = find_board(test)
     #
     # _, thresh = cv.threshold(cropped, 127, 253, cv.THRESH_BINARY_INV)
     # cv.imshow("dkdk", thresh)
     # if cv.waitKey(0) == ord("q"):
     #     exit()
     #
-    # tuning_color_filter(cropped)
+    #tuning_color_filter(test)
     # detect_robot_coords(test)
-    # exit()
+    #exit()
 
-    cap = cv.VideoCapture(0)
+    cap = cv.VideoCapture(r"C:\Users\Arilon\Desktop\Projects\MarkerBot\2.mp4")
+    previous_values = [None, None, None]
+
+    ret, frame = cap.read()
+    w, h, sz = frame.shape
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
+    video_writer_1 = cv.VideoWriter("detection2(1).avi", fourcc, 24.0, (800, 800))
 
     while True:
         ret, frame = cap.read()
         if not ret:
             print('not')
-            continue
-        cv.imshow('fr', frame)
-        k = cv.waitKey(1)
-        if k == ord('q'):
             break
-        # center, res, angle = detect_robot_coords(frame)
-        # cv.imshow('result', res)
-        crop = find_board(frame)
-        cv.imshow("djjd", crop)
+        #cv.imshow('fr', frame)
+        # k = cv.waitKey(1)
+        # if k == ord('q'):
+        #     break
+        center, res, angle = detect_robot_coords(frame, previous_values)
+        previous_values = [center, res, angle]
+        if res is None:
+            frame = cv.resize(frame, (800, 800), interpolation=cv.INTER_AREA)
+            video_writer_1.write(frame)
+        else:
+            video_writer_1.write(res)
 
-        k = cv.waitKey(1)
-        if k == ord('q'):
-            break
+
+
+
+        #cv.imshow('result', res)
+        #crop = find_board(frame)
+        #cv.imshow("djjd", )
+
+        # k = cv.waitKey(1)
+        # if k == ord('q'):
+        #     break
     cap.release()
+    video_writer_1.release()
+
 
     # center, image = detect_robot_coords(test)
     # img = test

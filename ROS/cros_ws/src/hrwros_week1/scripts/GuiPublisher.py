@@ -11,16 +11,15 @@ def PointsPublisher():
     """
     Функция, которая объявляет ноду и связь с топиками
     """
-	p_publisher = rospy.Publisher('points_from_gui_topic', Points_arrays, queue_size = 10)
-	rospy.init_node('gui_publisher_node', anonymous = False)
-	rate = rospy.Rate(10)
+    p_publisher = rospy.Publisher('points_from_gui_topic', Points_arrays, queue_size = 10)
+    rospy.init_node('gui_publisher_node', anonymous = False)
+    rate = rospy.Rate(10)
 
-	# The array to be published on the topic.
-	points_info = Points_arrays()
-	points_info.x_coordinates = str(x_av)
-	points_info.y_coordinates = str(y_av)
-	
-	#while not rospy.is_shutdown():
+# The array to be published on the topic.
+    points_info = Points_arrays()
+    points_info.x_coordinates = str(x_av)
+    points_info.y_coordinates = str(y_av)
+    while not rospy.is_shutdown():
         p_publisher.publish(points_info)
         #rate.sleep()
 
