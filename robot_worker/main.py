@@ -3,7 +3,7 @@ from ev3dev.ev3 import *
 import time
 import math
 
-from Server import receiveData
+from .Server import createSocket, receiveData, closeConnection
 
 
 def filter(sp):
@@ -53,7 +53,7 @@ def move_marker(getM, flag_down, iterations, mM):
         mM.stop(stop_action="brake")
 
 
-def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
+def main(Rad, Base, mL, mR, mM, fh, btn):
     """
     Основная функция, осуществляющая движения робота по заданному рисунку.
 
@@ -68,6 +68,8 @@ def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
     :param fh: файл записи логов
     :param btn: кнопка включения робота
     """
+    conn = createSocket()
+
     currX = currY = currA = 0
     prefX = prefY = prefA = 0
     currmL = currmR = prefmL = prefmR = 0
@@ -76,6 +78,7 @@ def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
     mR.stop(stop_action='coast')
     flag_down = -1
     for k in range(1):
+        start, getX, getY, getM = receiveData(conn)
         for i in range(len(getX)):
             iterations = 0
             try:
@@ -118,11 +121,11 @@ def main(getX, getY, getM, Rad, Base, mL, mR, mM, fh, btn):
                 mL.stop(stop_action='brake')
                 mR.stop(stop_action='brake')
                 time.sleep(0.1)
+            closeConnection(conn)
             fh.close
 
 
 if __name__ == '__main__':
-    start, getX, getY, getM = receiveData()
     Rad = 21.6
     Base = 185
     mL = LargeMotor('outB')
