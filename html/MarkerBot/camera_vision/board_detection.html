@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>MarkerBot.camera_vision.board_detection API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>MarkerBot.camera_vision.board_detection</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># -*- coding: utf-8 -*-
+import cv2 as cv
+import numpy as np
+
+
+def nothing(x):
+    &#34;&#34;&#34;
+    Функция для теста
+
+    :param x: -
+    :return: -
+    &#34;&#34;&#34;
+    pass
+
+
+def find_board(img: np.array, test=False, lenght=883, min_size=527132, max_size=1500000, centroid=True, record=False):
+    &#34;&#34;&#34;
+    Функция для поиска доски на изображении
+
+    :param img: RGB изображение np.array
+    :param test: bool настройка параметров
+    :param lenght: int Минимальная длинна линии доски
+    :param min_size: int Минимальный размер определившейся доски
+    :param max_size: int Максимальный размер определившейся доски
+    :param centroid: bool Центрирована ли доска на frame
+    :param record: запись проходных изображений
+
+    :return: img, flag - img - перспективное преобразование доски ( кроп доски)
+             flag - True - преобразование выполнено; False - преобразование не выполнено, img - оригинальная картинка
+    &#34;&#34;&#34;
+    if not test:
+        th_can_down = 60
+        th_can_up = 69
+        th_houg = 135
+        min_leght = lenght
+        gap = 128
+        min_size = min_size
+    else:
+        th_can_down = cv.getTrackbarPos(&#39;th_can_down&#39;, &#39;settings&#39;)
+        th_can_up = cv.getTrackbarPos(&#39;th_can_up&#39;, &#39;settings&#39;)
+        th_houg = cv.getTrackbarPos(&#39;th_hough&#39;, &#39;settings&#39;)
+        min_leght = cv.getTrackbarPos(&#39;min_line&#39;, &#39;settings&#39;)
+        gap = cv.getTrackbarPos(&#39;gap&#39;, &#39;settings&#39;)
+        min_size = cv.getTrackbarPos(&#39;min_size&#39;, &#39;settings&#39;)
+
+    b_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    thresh = cv.Canny(b_img, th_can_down, th_can_up, apertureSize=3)
+    kernel = np.ones((3, 3), np.uint8)
+    thresh = cv.dilate(thresh, kernel, iterations=4)
+
+    if test:
+        resize = cv.resize(thresh, (480, 480), interpolation=cv.INTER_AREA)
+        resize1 = cv.resize(img, (480, 480), interpolation=cv.INTER_AREA)
+        cv.imshow(&#39;img_r&#39;, resize1)
+        cv.imshow(&#39;canny&#39;, resize)
+        k = cv.waitKey(1)
+        if k == ord(&#39;q&#39;):
+            cv.destroyAllWindows()
+
+    lines = cv.HoughLinesP(thresh, 1, np.pi / 180, th_houg, minLineLength=min_leght, maxLineGap=gap)
+    transform = np.zeros(img.shape, dtype=np.uint8)
+
+    if lines is None:
+        if record:
+            return [img], False
+        return img, False
+
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        if test:
+            cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv.line(transform, (x1, y1), (x2, y2), (255, 255, 255), 2)
+
+    transform = cv.cvtColor(transform, cv.COLOR_BGR2GRAY)
+    transform = cv.dilate(transform, kernel, iterations=10)
+    transform = cv.bitwise_not(transform)
+
+    counters, heir = cv.findContours(transform, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+
+    squares = []
+    for cnt in counters:
+        peri = cv.arcLength(cnt, True)
+        approx = cv.approxPolyDP(cnt, 0.04 * peri, True)
+
+        if len(approx) == 4 and min_size &lt; cv.contourArea(cnt) &lt; max_size:
+            M = cv.moments(cnt)
+            cx = int(M[&#39;m10&#39;] / M[&#39;m00&#39;])
+            cy = int(M[&#39;m01&#39;] / M[&#39;m00&#39;])
+            squares.append((cnt, (cx, cy)))
+
+    if len(squares) == 0:
+        if record:
+            return [img], False
+        return img, False
+
+    nearest_square = squares[0]
+
+    if test:
+        print(cv.contourArea(nearest_square[0]))
+
+    if centroid:
+        img_center = (img.shape[0] // 2, img.shape[1] // 2)
+        for square in squares:
+            if abs(square[1][0] - img_center[1]) &lt; abs(nearest_square[1][0] - img_center[1]) and abs(
+                    square[1][1] - img_center[0]) &lt; abs(nearest_square[1][1] - img_center[0]):
+                nearest_square = square
+
+    peri = cv.arcLength(nearest_square[0], True)
+    approx = cv.approxPolyDP(nearest_square[0], 0.04 * peri, True)
+
+    if test:
+        for a in approx:
+            cv.circle(img, (a[0][0], a[0][1]), 15, (255, 0, 0), -1)
+
+    pts1 = np.float32([approx[0][0], approx[1][0], approx[2][0], approx[3][0]])
+    pts2 = np.float32([[0, 0], [0, 800], [800, 800], [800, 0]])
+
+    M = cv.getPerspectiveTransform(pts1, pts2)
+
+    perspective = cv.warpPerspective(img, M, (800, 800))
+
+    if test:
+        cv.imshow(&#39;perspective&#39;, perspective)
+        resize2 = cv.resize(transform, (480, 480), interpolation=cv.INTER_AREA)
+        cv.imshow(&#39;trans&#39;, resize2)
+        k = cv.waitKey(1)
+        if k == ord(&#39;q&#39;):
+            cv.destroyAllWindows()
+    if record:
+        return [img, perspective, transform, thresh], True
+    return perspective, True
+
+
+if __name__ == &#34;__main__&#34;:
+    # img = cv.imread(r&#34;C:\Users\Arilon\Desktop\Projects\MarkerBot\test_photo_4.png&#34;)
+    # find_board(img, test=True)
+
+    test = False
+    cap = cv.VideoCapture(r&#34;C:\Users\Arilon\Desktop\Projects\MarkerBot\1.mp4&#34;)
+
+    ret, frame = cap.read()
+    print(ret, (frame.shape[0:2]))
+    w, h, sz = frame.shape
+    fourcc = cv.VideoWriter_fourcc(*&#39;XVID&#39;)
+    video_writer_1 = cv.VideoWriter(&#34;perspective2.avi&#34;, fourcc, 24.0, (800, 800))
+    video_writer_2 = cv.VideoWriter(&#34;transform2.avi&#34;, fourcc, 24.0, (480, 480))
+    video_writer_3 = cv.VideoWriter(&#34;thresh2.avi&#34;, fourcc, 24.0, (480, 480))
+    video_writer_4 = cv.VideoWriter(&#34;img2.avi&#34;, fourcc, 24.0, (h, w))
+
+    if test:
+        cv.namedWindow(&#34;result&#34;)
+        cv.namedWindow(&#34;settings&#34;)
+        cv.createTrackbar(&#39;th_hough&#39;, &#39;settings&#39;, 0, 255, nothing)
+        cv.createTrackbar(&#39;min_line&#39;, &#39;settings&#39;, 0, 4000, nothing)
+        cv.createTrackbar(&#39;gap&#39;, &#39;settings&#39;, 0, 500, nothing)
+        cv.createTrackbar(&#39;th_can_down&#39;, &#39;settings&#39;, 0, 255, nothing)
+        cv.createTrackbar(&#39;th_can_up&#39;, &#39;settings&#39;, 0, 255, nothing)
+        cv.createTrackbar(&#39;min_size&#39;, &#39;settings&#39;, 100000, 1000000, nothing)
+
+    prev_images = []
+    count = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            print(&#39;not&#39;)
+            break
+        images, flag = find_board(frame, test=False, record=True)
+        if flag:
+            images[2] = cv.resize(images[2], (480, 480), interpolation=cv.INTER_AREA)
+            images[3] = cv.resize(images[3], (480, 480), interpolation=cv.INTER_AREA)
+            images[2] = cv.cvtColor(images[2], cv.COLOR_GRAY2BGR)
+            images[3] = cv.cvtColor(images[3], cv.COLOR_GRAY2BGR)
+            video_writer_1.write(images[1])
+            video_writer_2.write(images[2])
+            video_writer_3.write(images[3])
+            video_writer_4.write(images[0])
+            #print(images[0].shape, images[2].shape, images[3].shape)#
+            prev_images = images
+        elif len(prev_images) &gt; 1:
+            video_writer_4.write(images[0])
+            video_writer_1.write(prev_images[1])
+            video_writer_2.write(prev_images[2])
+            video_writer_3.write(prev_images[3])
+
+    cap.release()
+    video_writer_1.release()
+    video_writer_2.release()
+    video_writer_3.release()
+    video_writer_4.release()
+        # cv.imshow(&#34;res_img&#34;, img)
+        # if cv.waitKey(1) == ord(&#34;q&#34;):
+        #     cap.release()
+        #     exit()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="MarkerBot.camera_vision.board_detection.find_board"><code class="name flex">
+<span>def <span class="ident">find_board</span></span>(<span>img: <built-in function array>, test=False, lenght=883, min_size=527132, max_size=1500000, centroid=True, record=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Функция для поиска доски на изображении</p>
+<p>:param img: RGB изображение np.array
+:param test: bool настройка параметров
+:param lenght: int Минимальная длинна линии доски
+:param min_size: int Минимальный размер определившейся доски
+:param max_size: int Максимальный размер определившейся доски
+:param centroid: bool Центрирована ли доска на frame
+:param record: запись проходных изображений</p>
+<p>:return: img, flag - img - перспективное преобразование доски ( кроп доски)
+flag - True - преобразование выполнено; False - преобразование не выполнено, img - оригинальная картинка</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_board(img: np.array, test=False, lenght=883, min_size=527132, max_size=1500000, centroid=True, record=False):
+    &#34;&#34;&#34;
+    Функция для поиска доски на изображении
+
+    :param img: RGB изображение np.array
+    :param test: bool настройка параметров
+    :param lenght: int Минимальная длинна линии доски
+    :param min_size: int Минимальный размер определившейся доски
+    :param max_size: int Максимальный размер определившейся доски
+    :param centroid: bool Центрирована ли доска на frame
+    :param record: запись проходных изображений
+
+    :return: img, flag - img - перспективное преобразование доски ( кроп доски)
+             flag - True - преобразование выполнено; False - преобразование не выполнено, img - оригинальная картинка
+    &#34;&#34;&#34;
+    if not test:
+        th_can_down = 60
+        th_can_up = 69
+        th_houg = 135
+        min_leght = lenght
+        gap = 128
+        min_size = min_size
+    else:
+        th_can_down = cv.getTrackbarPos(&#39;th_can_down&#39;, &#39;settings&#39;)
+        th_can_up = cv.getTrackbarPos(&#39;th_can_up&#39;, &#39;settings&#39;)
+        th_houg = cv.getTrackbarPos(&#39;th_hough&#39;, &#39;settings&#39;)
+        min_leght = cv.getTrackbarPos(&#39;min_line&#39;, &#39;settings&#39;)
+        gap = cv.getTrackbarPos(&#39;gap&#39;, &#39;settings&#39;)
+        min_size = cv.getTrackbarPos(&#39;min_size&#39;, &#39;settings&#39;)
+
+    b_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    thresh = cv.Canny(b_img, th_can_down, th_can_up, apertureSize=3)
+    kernel = np.ones((3, 3), np.uint8)
+    thresh = cv.dilate(thresh, kernel, iterations=4)
+
+    if test:
+        resize = cv.resize(thresh, (480, 480), interpolation=cv.INTER_AREA)
+        resize1 = cv.resize(img, (480, 480), interpolation=cv.INTER_AREA)
+        cv.imshow(&#39;img_r&#39;, resize1)
+        cv.imshow(&#39;canny&#39;, resize)
+        k = cv.waitKey(1)
+        if k == ord(&#39;q&#39;):
+            cv.destroyAllWindows()
+
+    lines = cv.HoughLinesP(thresh, 1, np.pi / 180, th_houg, minLineLength=min_leght, maxLineGap=gap)
+    transform = np.zeros(img.shape, dtype=np.uint8)
+
+    if lines is None:
+        if record:
+            return [img], False
+        return img, False
+
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        if test:
+            cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv.line(transform, (x1, y1), (x2, y2), (255, 255, 255), 2)
+
+    transform = cv.cvtColor(transform, cv.COLOR_BGR2GRAY)
+    transform = cv.dilate(transform, kernel, iterations=10)
+    transform = cv.bitwise_not(transform)
+
+    counters, heir = cv.findContours(transform, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+
+    squares = []
+    for cnt in counters:
+        peri = cv.arcLength(cnt, True)
+        approx = cv.approxPolyDP(cnt, 0.04 * peri, True)
+
+        if len(approx) == 4 and min_size &lt; cv.contourArea(cnt) &lt; max_size:
+            M = cv.moments(cnt)
+            cx = int(M[&#39;m10&#39;] / M[&#39;m00&#39;])
+            cy = int(M[&#39;m01&#39;] / M[&#39;m00&#39;])
+            squares.append((cnt, (cx, cy)))
+
+    if len(squares) == 0:
+        if record:
+            return [img], False
+        return img, False
+
+    nearest_square = squares[0]
+
+    if test:
+        print(cv.contourArea(nearest_square[0]))
+
+    if centroid:
+        img_center = (img.shape[0] // 2, img.shape[1] // 2)
+        for square in squares:
+            if abs(square[1][0] - img_center[1]) &lt; abs(nearest_square[1][0] - img_center[1]) and abs(
+                    square[1][1] - img_center[0]) &lt; abs(nearest_square[1][1] - img_center[0]):
+                nearest_square = square
+
+    peri = cv.arcLength(nearest_square[0], True)
+    approx = cv.approxPolyDP(nearest_square[0], 0.04 * peri, True)
+
+    if test:
+        for a in approx:
+            cv.circle(img, (a[0][0], a[0][1]), 15, (255, 0, 0), -1)
+
+    pts1 = np.float32([approx[0][0], approx[1][0], approx[2][0], approx[3][0]])
+    pts2 = np.float32([[0, 0], [0, 800], [800, 800], [800, 0]])
+
+    M = cv.getPerspectiveTransform(pts1, pts2)
+
+    perspective = cv.warpPerspective(img, M, (800, 800))
+
+    if test:
+        cv.imshow(&#39;perspective&#39;, perspective)
+        resize2 = cv.resize(transform, (480, 480), interpolation=cv.INTER_AREA)
+        cv.imshow(&#39;trans&#39;, resize2)
+        k = cv.waitKey(1)
+        if k == ord(&#39;q&#39;):
+            cv.destroyAllWindows()
+    if record:
+        return [img, perspective, transform, thresh], True
+    return perspective, True</code></pre>
+</details>
+</dd>
+<dt id="MarkerBot.camera_vision.board_detection.nothing"><code class="name flex">
+<span>def <span class="ident">nothing</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Функция для теста</p>
+<p>:param x: -
+:return: -</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nothing(x):
+    &#34;&#34;&#34;
+    Функция для теста
+
+    :param x: -
+    :return: -
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="MarkerBot.camera_vision" href="index.html">MarkerBot.camera_vision</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="MarkerBot.camera_vision.board_detection.find_board" href="#MarkerBot.camera_vision.board_detection.find_board">find_board</a></code></li>
+<li><code><a title="MarkerBot.camera_vision.board_detection.nothing" href="#MarkerBot.camera_vision.board_detection.nothing">nothing</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
