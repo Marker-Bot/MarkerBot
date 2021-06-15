@@ -20,7 +20,9 @@ def Detector():
 	traj_x = [1, 1, 1]
 	traj_y = [1, 1, 1]
 
-	dt.detect()
+	while True:
+		rb.detect_robot_coords()
+
 
 
 	
