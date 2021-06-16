@@ -22,6 +22,7 @@
 <h1 class="title">Module <code>MarkerBot.camera_vision.robot_detection</code></h1>
 </header>
 <section id="section-intro">
+    Модуль для детекции робота на изображении.
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -253,9 +254,9 @@ if __name__ == &#39;__main__&#39;:
 </code></dt>
 <dd>
 <div class="desc"><p>Детектирование метки на изображении вычисление по порогу цвета и основным моментам изображения.</p>
-<p>:param img: np.array image
-:param h_min: (h, s, v) кортеж мин. HSV трешхолдов
-:param h_max: (h, s, v) кортеж макс. HSV трешхолдов</p>
+<p>:param img: np.array image<br>
+:param h_min: (h, s, v) кортеж мин. HSV трешхолдов<br>
+:param h_max: (h, s, v) кортеж макс. HSV трешхолдов</p><br>
 <p>:return: (x, y) - Координаты центра метки</p></div>
 <details class="source">
 <summary>
@@ -303,10 +304,10 @@ if __name__ == &#39;__main__&#39;:
 <span>def <span class="ident">detect_robot_coords</span></span>(<span>img, previous_values, resize=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Детектирование координат робота по фотографии и меткам.</p>
-<p>:param img: np.array текущее изображение для детектирования
-:param previous_values: Результат предыдущего удачного детектирования
-:param resize: Изменение изображения в более удобный вид (для теста)</p>
+<div class="desc"><p>Детектирование координат робота по фотографии и меткам.</p><br>
+<p>:param img: np.array текущее изображение для детектирования<br>
+:param previous_values: Результат предыдущего удачного детектирования<br>
+:param resize: Изменение изображения в более удобный вид (для теста)</p><br>
 <p>:return: (x, y) координаты (x, y) ценра , img детекции,</p></div>
 <details class="source">
 <summary>
@@ -379,8 +380,8 @@ if __name__ == &#39;__main__&#39;:
 <span>def <span class="ident">tuning_color_filter</span></span>(<span>test_img)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Вспомогательная функция для настройки порога цвета метки.</p>
-<p>:param test_img: np.array - image
+<div class="desc"><p>Вспомогательная функция для настройки порога цвета метки.</p><br>
+<p>:param test_img: np.array - image<br>
 :return:</p></div>
 <details class="source">
 <summary>
@@ -437,7 +438,7 @@ if __name__ == &#39;__main__&#39;:
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
+<h1>Project MarkerBot</h1>
 <div class="toc">
 <ul></ul>
 </div>
